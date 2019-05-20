@@ -1,6 +1,8 @@
 package com.yahoo.ycsb;
 
 import com.yahoo.ycsb.workloads.CoreWorkload;
+import java.util.concurrent.ConcurrentHashMap;
+import java.lang.Math;
 
 public class App 
 {
@@ -13,9 +15,15 @@ public class App
     public void go() {
     	workload = new CoreWorkload();
         workload.init();
+        double readPercent = 0.95;
+        ConcurrentHashMap map = new ConcurrentHashMap();
 
         for (int i = 0; i < 1000000; i++) {
-        	System.out.println("" + workload.nextKeynum());
+            if (Math.random() < readPercent) {
+                workload.doTransactionRead(map);
+            } else {
+                workload.doTransactionUpdate(map);
+            }
         }
     }
 }
