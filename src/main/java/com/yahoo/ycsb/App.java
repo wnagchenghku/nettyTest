@@ -13,5 +13,9 @@ public class App
     public void go() {
     	workload = new CoreWorkload();
         workload.init();
+
+        for (int i = 0; i < 1000000; i++) {
+        	System.out.println("" + workload.nextKeynum());
+        }
     }
 }

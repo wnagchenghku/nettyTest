@@ -12,10 +12,12 @@ public class CoreWorkload {
 	public void init() {
 	    recordcount = 1000;
 
-		keychooser = new UniformLongGenerator(0, recordcount - 1);
+		// keychooser = new UniformLongGenerator(0, recordcount - 1);
+		keychooser = new SequentialGenerator(0, recordcount - 1);
+		// keychooser = new ScrambledZipfianGenerator(0, recordcount - 1);		
 	}
 
-	long nextKeynum() {
+	public long nextKeynum() {
 		return keychooser.nextValue().intValue();
 	}
 }
