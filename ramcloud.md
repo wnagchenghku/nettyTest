@@ -13,6 +13,8 @@ Install MLNX OFED driver: MLNX_OFED_LINUX-4.0-2.0.0.1-ubuntu15.04-x86_64.tgz
 
 MLNX_DPDK=y ./scripts/dpdkBuild.sh 
 
+> We build MLNX_DPDK with CONFIG_RTE_BUILD_SHARED_LIB=n, so we should delete DPDK_SHARED=yes in GNUmakefile.
+
 make -j8 DPDK=yes DPDK_DIR=dpdk DEBUG=no
 
 
@@ -45,7 +47,7 @@ rename7 is MLNX NIC
 Try the latest RAMCloud to run DPDK.
 
 
-When you run sudo in the u1 container, avoid asking sudo password, append this line to /etc/sudoers
+When you run sudo in the u1 container, avoid asking sudo password, append this line to /etc/sudoers ($ sudo visudo)
 
 # Allow members of group sudo to execute any command
 %sudo	ALL=(ALL:ALL) ALL
