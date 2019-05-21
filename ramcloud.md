@@ -137,3 +137,13 @@ Run the performance benchmark script:
 ```
 python scripts/clusterperf.py basic --servers=4 --replicas=0 --clients=1 --dpdkPort=0 --superuser  --transport=basic+dpdk --verbose --workload=YCSB-B
 ```
+
+Replace in cluster.py
+```
+cluster.hosts.pop(0)
+```
+with
+```
+cluster.hosts.remove(coordinator_host)
+```
+
