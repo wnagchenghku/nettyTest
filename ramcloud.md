@@ -35,10 +35,11 @@ Run update-grub to apply the config to grub.
 $ sudo update-grub
 
 Once the hugepage memory is reserved, to make the memory available for DPDK use, perform the following steps:
-
+```
 mkdir -p /mnt/huge
 mount -t hugetlbfs nodev /mnt/huge
 chmod 777 /mnt/huge
+```
 
 p2p1      Link encap:Ethernet  HWaddr 7c:fe:90:c3:65:20  is MLNX NIC
 rename7 is MLNX NIC
@@ -81,3 +82,58 @@ sudo /home/hkucs/Migration/cheng/RAMCloud-Lab/obj.master/server -C basic+udp:hos
 To start the client (DPDK):
 
 sudo ./obj.master/apps/ClusterPerf -C basic+udp:host=202.45.128.165,port=12246 --numClients 1 --clientIndex 0 --seconds 10 --maxSessions 1 --size 100 basic --configDir config
+
+
+Run with clusterperf.py:
+
+Internally, we run clusterperf.py from an NFS-mounted directory which is mounted on the same path on all of our cluster machines.
+
+apt-get install nfs-kernel-server
+add in /etc/exports:
+```
+/home/hkucs/RAMCloud    *(rw,sync,no_root_squash)
+```
+
+other machines mount it:
+```
+sudo mount 202.45.128.165:/home/hkucs/RAMCloud /home/hkucs/RAMCloud/
+```
+
+Setup NICs:
+```
+auto p2p1
+iface p2p1 inet static
+    address 10.22.1.x
+    netmask 255.255.255.0
+```
+
+create hosts:
+```
+hkucs@heming-rdma6:~/RAMCloud$ cat scripts/localconfig.py
+hosts = []
+ids = [4,5,6,7,8,9]
+for i in ids:
+    # hosts.append(('202.45.128.%d' % (159 + i),
+    # '10.22.1.%d' % i,
+    hosts.append(('202.45.128.%d' % (159 + i),
+    '202.45.128.%d' % (159 + i),
+    i))
+```
+
+Change the disk storage in scripts/config.py:
+```
+# Command-line argument specifying where the server should store the segment
+# replicas when one device is used.
+# default_disk1 = '-f /dev/sda2'
+default_disk1 = '-f /tmp/ramcloud1'
+
+# Command-line argument specifying where the server should store the segment
+# replicas when two devices are used.
+# default_disk2 = '-f /dev/sda2,/dev/sdb2'
+default_disk2 = '-f /tmp/ramcloud1,/tmp/ramcloud2'
+```
+
+Run the performance benchmark script:
+```
+python scripts/clusterperf.py basic --servers=4 --replicas=0 --clients=1 --dpdkPort=0 --superuser  --transport=basic+dpdk --verbose --workload=YCSB-B
+```
