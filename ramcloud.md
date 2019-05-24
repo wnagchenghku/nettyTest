@@ -147,3 +147,15 @@ with
 cluster.hosts.remove(coordinator_host)
 ```
 
+To run rocksteady:
+
+Change `numObjects` to a smaller number since we only have client to fill the data.
+```
+-r 0
+--servers=4
+--clients=1
+--superuser
+--dpdkPort=0
+--logLevel=DEBUG
+```
+Then just type `./scripts/run-rocksteady-sync-prio-emulab`
